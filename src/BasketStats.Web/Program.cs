@@ -127,11 +127,27 @@ app.MapGet("/api/competitions", async (IMediator mediator) =>
 //    }
 //});
 
-app.MapPost("/api/competitions", async ([FromBody] CreateCompetitionRequest request, IMediator mediator) =>
+//app.MapPost("/api/competitions", async ([FromBody] CreateCompetitionRequest request, IMediator mediator) =>
+//{
+//    var command = new CreateCompetitionCommand(request.Name);
+//    var competitionId = await mediator.Send(command);
+//    return Results.Created($"/api/competitions/{competitionId}", new { Id = competitionId, request.Name });
+//});
+
+// In src/BasketStats.Web/Program.cs
+
+app.MapPost("/api/competitions", async (
+    [FromBody] CreateCompetitionRequest request,
+    IMediator mediator,
+    ILogger<Program> logger) => // Inject the logger
 {
+    // --- DEBUGGING STEP ---
+    // Log the request object as soon as it arrives.
+    logger.LogInformation("API received request to create competition with name: '{CompetitionName}'", request.Name);
+
     var command = new CreateCompetitionCommand(request.Name);
     var competitionId = await mediator.Send(command);
-    return Results.Created($"/api/competitions/{competitionId}", new { Id = competitionId, request.Name });
+    return Results.Created($"/api/competitions/{competitionId}", new { Id = competitionId, Name = request.Name });
 });
 
 app.MapGet("/api/players", async (IPlayerRepository repo) =>

@@ -1,0 +1,60 @@
+﻿@page "/competitions/create"
+@rendermode InteractiveServer
+
+@using BasketStats.UI.Models
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager NavigationManager
+@inject ILogger<CreateCompetition> Logger
+
+<PageTitle>Create Competition</PageTitle>
+
+<h3>Create a New Competition</h3>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+<EditForm Model="CompetitionModel" OnValidSubmit="HandleValidSubmit" FormName="CreateCompetitionForm">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Competition Name:</label>
+        <InputText id="name" class="form-control" @bind-Value="CompetitionModel.Name" />
+        <ValidationMessage For="@(() => CompetitionModel.Name)" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Competition</button>
+</EditForm>
+
+@code {
+    private CreateCompetitionRequest CompetitionModel { get; set; } = new();
+
+    private string? errorMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        Logger.LogInformation("Submit button clicked. Model Name is: '{Name}'", CompetitionModel.Name);
+
+        if (string.IsNullOrWhiteSpace(CompetitionModel.Name))
+        {
+            errorMessage = "Validation failed: Name is empty before sending.";
+            return;
+        }
+
+        errorMessage = null;
+        var client = HttpClientFactory.CreateClient("Api");
+        var response = await client.PostAsJsonAsync("api/competitions", CompetitionModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("/competitions");
+        }
+        else
+        {
+            errorMessage = await response.Content.ReadAsStringAsync();
+        }
+    }
+}
