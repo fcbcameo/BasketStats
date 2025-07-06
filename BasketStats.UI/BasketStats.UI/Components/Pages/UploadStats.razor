@@ -1,0 +1,100 @@
+﻿@page "/competitions/{CompetitionId:guid}/upload"
+@rendermode InteractiveServer
+
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager NavigationManager
+@inject ILogger<UploadStats> Logger
+
+<PageTitle>Upload Stats</PageTitle>
+
+<h3>Upload Stats for Competition: @CompetitionId</h3>
+
+<EditForm Model="dummyModel" OnValidSubmit="HandleSubmit" FormName="UploadForm">
+    <div class="mb-3">
+        <label for="file" class="form-label">Select Stats CSV File:</label>
+        <InputFile OnChange="LoadFile" class="form-control" />
+    </div>
+
+    @if (fileToUpload is not null)
+    {
+        <button type="submit" class="btn btn-success" disabled="@isUploading">
+            @if (isUploading)
+            {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span>Uploading...</span>
+            }
+            else
+            {
+                <span>Upload File</span>
+            }
+        </button>
+    }
+</EditForm>
+
+@if (!string.IsNullOrEmpty(feedbackMessage))
+{
+    <div class="alert @(isError ? "alert-danger" : "alert-success") mt-3" role="alert">
+        @feedbackMessage
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid CompetitionId { get; set; }
+
+    // Add this dummy model object
+    private object dummyModel = new();
+
+    private IBrowserFile? fileToUpload;
+    private bool isUploading = false;
+    private string? feedbackMessage;
+    private bool isError = false;
+
+    private void LoadFile(InputFileChangeEventArgs e)
+    {
+        fileToUpload = e.File;
+        feedbackMessage = null;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (fileToUpload is null) return;
+
+        isUploading = true;
+        feedbackMessage = null;
+
+        try
+        {
+            var client = HttpClientFactory.CreateClient("Api");
+            using var content = new MultipartFormDataContent();
+
+            using var fileStream = fileToUpload.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5);
+            var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(fileToUpload.ContentType);
+
+            content.Add(content: streamContent, name: "file", fileName: fileToUpload.Name);
+
+            var response = await client.PostAsync($"api/competitions/{CompetitionId}/matches", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                isError = false;
+                feedbackMessage = $"File '{fileToUpload.Name}' uploaded successfully!";
+            }
+            else
+            {
+                isError = true;
+                feedbackMessage = $"Error uploading file: {await response.Content.ReadAsStringAsync()}";
+            }
+        }
+        catch (Exception ex)
+        {
+            isError = true;
+            feedbackMessage = $"An unexpected error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+}
