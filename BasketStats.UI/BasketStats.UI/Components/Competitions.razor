@@ -1,0 +1,45 @@
+﻿@page "/competitions"
+@inject IHttpClientFactory HttpClientFactory
+@using BasketStats.Application.Competitions.Queries.GetAllCompetitions
+@using BasketStats.Application.DTOs // Use the DTO from your Application layer!
+
+<PageTitle>Competitions</PageTitle>
+
+<h1>Competitions</h1>
+
+<a href="/competitions/create" class="btn btn-primary mb-3">Create New Competition</a>
+
+@if (competitions == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comp in competitions)
+            {
+                <tr>
+                    <td>@comp.Id</td>
+                    <td>@comp.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private CompetitionDto[]? competitions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = HttpClientFactory.CreateClient("Api");
+        competitions = await client.GetFromJsonAsync<CompetitionDto[]>("api/competitions");
+    }
+}
