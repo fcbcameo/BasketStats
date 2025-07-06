@@ -11,13 +11,19 @@ using BasketStats.Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using BasketStats.Infrastructure.Persistence;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
-builder.Services.AddTransient<ICsvParser, CsvParserService>(); // Transient is fine for a stateless service
+//builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
+//builder.Services.AddTransient<ICsvParser, CsvParserService>(); // Transient is fine for a stateless service
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -26,7 +32,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Register our repository for Dependency Injection
-builder.Services.AddSingleton<ICompetitionRepository, InMemoryCompetitionRepository>();
+//builder.Services.AddSingleton<ICompetitionRepository, InMemoryCompetitionRepository>();
 
 // Register MediatR and handlers from the Application assembly
 builder.Services.AddMediatR(cfg =>
@@ -34,9 +40,14 @@ builder.Services.AddMediatR(cfg =>
 
 //builder.Services.AddAntiforgery();
 
-builder.Services.AddSingleton<IPlayerRepository, InMemoryPlayerRepository>();
-builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
+//builder.Services.AddSingleton<IPlayerRepository, InMemoryPlayerRepository>();
+//builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
 builder.Services.AddTransient<ICsvParser, CsvParserService>();
+
+builder.Services.AddScoped<ICompetitionRepository, EfCompetitionRepository>();
+builder.Services.AddScoped<IPlayerRepository, EfPlayerRepository>(); 
+builder.Services.AddScoped<IMatchRepository, EfMatchRepository>();   
+
 
 var app = builder.Build();
 
