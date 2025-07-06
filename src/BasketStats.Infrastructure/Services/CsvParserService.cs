@@ -45,7 +45,7 @@ public class CsvParserService : ICsvParser
             var playerName = csv.GetField("Name");
 
             // 3. Stop if we hit the "Totals" row
-            if ((string.Equals(playerName, "Totals", StringComparison.OrdinalIgnoreCase)) || (string.Equals(playerName, "TEAM", StringComparison.OrdinalIgnoreCase)))
+            if ((string.Equals(playerName, "Totals", StringComparison.OrdinalIgnoreCase)) || (string.Equals(playerName, " TEAM", StringComparison.OrdinalIgnoreCase)))
             {
                 break;
             }
