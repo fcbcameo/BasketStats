@@ -1,0 +1,6 @@
+@BasketStats.Web_HostAddress = http://localhost:5188
+
+GET {{BasketStats.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
