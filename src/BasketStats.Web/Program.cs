@@ -1,19 +1,16 @@
 // src/BasketStats.Web/Program.cs
+using BasketStats.Application.Teams.Queries.GetTeamSeasonStats;
 using BasketStats.Application.Competitions.Commands.CreateCompetition;
 using BasketStats.Application.Competitions.Queries.GetAllCompetitions;
+using BasketStats.Application.Matches.Commands.UploadMatchStats;
+using BasketStats.Application.Players.Queries.GetPlayerSeasonStats;
+using BasketStats.Application.Services;
 using BasketStats.Domain.Repositories;
 using BasketStats.Infrastructure.Persistence.Repositories;
-using BasketStats.Application.Services;
 using BasketStats.Infrastructure.Services;
-using BasketStats.Application.Matches.Commands.UploadMatchStats;
-using BasketStats.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using BasketStats.Application.Players.Queries.GetPlayerSeasonStats;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -123,6 +120,14 @@ app.MapGet("/api/players/{playerId}/stats",
         var result = await mediator.Send(query);
 
         return result is not null ? Results.Ok(result) : Results.NotFound();
+    });
+
+app.MapGet("/api/team/stats",
+    async ([FromQuery] Guid? competitionId, IMediator mediator) =>
+    {
+        var query = new GetTeamSeasonStatsQuery(competitionId);
+        var result = await mediator.Send(query);
+        return Results.Ok(result);
     });
 
 app.Run();
