@@ -6,6 +6,7 @@ using BasketStats.Infrastructure.Persistence.Repositories;
 using BasketStats.Application.Services;
 using BasketStats.Infrastructure.Services;
 using BasketStats.Application.Matches.Commands.UploadMatchStats;
+using BasketStats.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -33,6 +34,10 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateCompetitionCommand).Assembly));
 
 //builder.Services.AddAntiforgery();
+
+builder.Services.AddSingleton<IPlayerRepository, InMemoryPlayerRepository>();
+builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
+builder.Services.AddTransient<ICsvParser, CsvParserService>();
 
 var app = builder.Build();
 
@@ -95,6 +100,18 @@ app.MapPost("/api/competitions", async ([FromBody] CreateCompetitionRequest requ
     {
         return Results.BadRequest(ex.Message);
     }
+});
+
+app.MapGet("/api/players", async (IPlayerRepository repo) =>
+{
+    // We need to cast to the concrete type to access the helper method.
+    // This is okay for a temporary, in-memory testing scenario.
+    if (repo is InMemoryPlayerRepository playerRepo)
+    {
+        var players = await playerRepo.GetAllAsync();
+        return Results.Ok(players);
+    }
+    return Results.NotFound();
 });
 
 app.Run();
