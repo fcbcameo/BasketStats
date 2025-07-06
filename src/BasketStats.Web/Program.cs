@@ -1,18 +1,21 @@
 // src/BasketStats.Web/Program.cs
-using BasketStats.Application.Teams.Queries.GetTeamSeasonStats;
+using BasketStats.Application.Common.Behaviors;
 using BasketStats.Application.Competitions.Commands.CreateCompetition;
 using BasketStats.Application.Competitions.Queries.GetAllCompetitions;
 using BasketStats.Application.Matches.Commands.UploadMatchStats;
 using BasketStats.Application.Players.Queries.GetPlayerSeasonStats;
 using BasketStats.Application.Services;
+using BasketStats.Application.Teams.Queries.GetTeamSeasonStats;
 using BasketStats.Domain.Repositories;
+using BasketStats.Infrastructure.Persistence;
 using BasketStats.Infrastructure.Persistence.Repositories;
 using BasketStats.Infrastructure.Services;
+using BasketStats.Web.Middleware;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
-using BasketStats.Infrastructure.Persistence;
+using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,10 +49,22 @@ builder.Services.AddTransient<ICsvParser, CsvParserService>();
 
 builder.Services.AddScoped<ICompetitionRepository, EfCompetitionRepository>();
 builder.Services.AddScoped<IPlayerRepository, EfPlayerRepository>(); 
-builder.Services.AddScoped<IMatchRepository, EfMatchRepository>();   
+builder.Services.AddScoped<IMatchRepository, EfMatchRepository>();
+
+// Register MediatR
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(CreateCompetitionCommand).Assembly));
+
+// *** ADD VALIDATION BEHAVIOR ***
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+// *** ADD VALIDATORS ***
+builder.Services.AddValidatorsFromAssembly(typeof(CreateCompetitionCommand).Assembly);
 
 
 var app = builder.Build();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -98,18 +113,25 @@ app.MapGet("/api/competitions", async (IMediator mediator) =>
     return Results.Ok(competitions);
 });
 
+//app.MapPost("/api/competitions", async ([FromBody] CreateCompetitionRequest request, IMediator mediator) =>
+//{
+//    try
+//    {
+//        var command = new CreateCompetitionCommand(request.Name);
+//        var competitionId = await mediator.Send(command);
+//        return Results.Created($"/api/competitions/{competitionId}", new { Id = competitionId, request.Name });
+//    }
+//    catch (ArgumentException ex)
+//    {
+//        return Results.BadRequest(ex.Message);
+//    }
+//});
+
 app.MapPost("/api/competitions", async ([FromBody] CreateCompetitionRequest request, IMediator mediator) =>
 {
-    try
-    {
-        var command = new CreateCompetitionCommand(request.Name);
-        var competitionId = await mediator.Send(command);
-        return Results.Created($"/api/competitions/{competitionId}", new { Id = competitionId, request.Name });
-    }
-    catch (ArgumentException ex)
-    {
-        return Results.BadRequest(ex.Message);
-    }
+    var command = new CreateCompetitionCommand(request.Name);
+    var competitionId = await mediator.Send(command);
+    return Results.Created($"/api/competitions/{competitionId}", new { Id = competitionId, request.Name });
 });
 
 app.MapGet("/api/players", async (IPlayerRepository repo) =>
