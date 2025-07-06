@@ -13,6 +13,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using BasketStats.Application.Players.Queries.GetPlayerSeasonStats;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -113,6 +115,15 @@ app.MapGet("/api/players", async (IPlayerRepository repo) =>
     }
     return Results.NotFound();
 });
+
+app.MapGet("/api/players/{playerId}/stats",
+    async (Guid playerId, [FromQuery] Guid? competitionId, IMediator mediator) =>
+    {
+        var query = new GetPlayerSeasonStatsQuery(playerId, competitionId);
+        var result = await mediator.Send(query);
+
+        return result is not null ? Results.Ok(result) : Results.NotFound();
+    });
 
 app.Run();
 

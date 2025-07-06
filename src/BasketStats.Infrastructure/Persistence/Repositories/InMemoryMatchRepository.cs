@@ -10,4 +10,9 @@ public class InMemoryMatchRepository : IMatchRepository
         _matches.Add(match);
         return Task.CompletedTask;
     }
+
+    public Task<IEnumerable<Match>> GetAllAsync()
+    {
+        return Task.FromResult(_matches.AsEnumerable());
+    }
 }

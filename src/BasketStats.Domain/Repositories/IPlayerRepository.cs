@@ -5,4 +5,5 @@ public interface IPlayerRepository
 {
     Task<Player?> GetByNameAsync(string name);
     Task AddAsync(Player player);
+    Task<Player?> GetByIdAsync(Guid id);
 }
