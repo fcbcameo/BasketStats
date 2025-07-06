@@ -20,6 +20,7 @@ else
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +29,9 @@ else
                 <tr>
                     <td>@comp.Id</td>
                     <td>@comp.Name</td>
+                    <td>
+                        <a href="@($"competitions/{comp.Id}/upload")" class="btn btn-sm btn-info">Upload Stats</a>
+                    </td>
                 </tr>
             }
         </tbody>
