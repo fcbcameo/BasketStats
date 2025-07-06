@@ -26,4 +26,10 @@ public class InMemoryPlayerRepository : IPlayerRepository
     {
         return Task.FromResult(_players.AsEnumerable());
     }
+
+    public Task<Player?> GetByIdAsync(Guid id)
+    {
+        var player = _players.FirstOrDefault(p => p.Id == id);
+        return Task.FromResult(player);
+    }
 }

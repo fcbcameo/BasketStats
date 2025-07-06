@@ -4,4 +4,5 @@ namespace BasketStats.Domain.Repositories;
 public interface IMatchRepository
 {
     Task AddAsync(Match match);
+    Task<IEnumerable<Match>> GetAllAsync();
 }
