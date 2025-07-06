@@ -1,41 +1,64 @@
+// src/BasketStats.Web/Program.cs
+using BasketStats.Application.Competitions.Commands.CreateCompetition;
+using BasketStats.Application.Competitions.Queries.GetAllCompetitions;
+using BasketStats.Domain.Repositories;
+using BasketStats.Infrastructure.Persistence.Repositories;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "BasketStats API", Version = "v1" });
+});
+
+// Register our repository for Dependency Injection
+builder.Services.AddSingleton<ICompetitionRepository, InMemoryCompetitionRepository>();
+
+// Register MediatR and handlers from the Application assembly
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(CreateCompetitionCommand).Assembly));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+// Refactored API Endpoints
+app.MapGet("/api/competitions", async (IMediator mediator) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var competitions = await mediator.Send(new GetAllCompetitionsQuery());
+    return Results.Ok(competitions);
+});
 
-app.MapGet("/weatherforecast", () =>
+app.MapPost("/api/competitions", async ([FromBody] CreateCompetitionRequest request, IMediator mediator) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    try
+    {
+        var command = new CreateCompetitionCommand(request.Name);
+        var competitionId = await mediator.Send(command);
+        return Results.Created($"/api/competitions/{competitionId}", new { Id = competitionId, request.Name });
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+// DTO for the request
+public record CreateCompetitionRequest(string Name);
