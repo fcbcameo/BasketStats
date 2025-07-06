@@ -3,6 +3,9 @@ using BasketStats.Application.Competitions.Commands.CreateCompetition;
 using BasketStats.Application.Competitions.Queries.GetAllCompetitions;
 using BasketStats.Domain.Repositories;
 using BasketStats.Infrastructure.Persistence.Repositories;
+using BasketStats.Application.Services;
+using BasketStats.Infrastructure.Services;
+using BasketStats.Application.Matches.Commands.UploadMatchStats;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -13,6 +16,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
+builder.Services.AddTransient<ICsvParser, CsvParserService>(); // Transient is fine for a stateless service
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -26,6 +32,8 @@ builder.Services.AddSingleton<ICompetitionRepository, InMemoryCompetitionReposit
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateCompetitionCommand).Assembly));
 
+//builder.Services.AddAntiforgery();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,7 +45,38 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// If you add authentication/authorization middleware, place them here:
+// app.UseAuthentication();
+// app.UseAuthorization();
+
+// If you use routing/endpoints, add them like this:
+// app.UseRouting();
+// app.UseAntiforgery();
+// app.UseEndpoints(endpoints => { /* map endpoints here */ });
+
+// For minimal APIs (as in your code), place app.UseAntiforgery() after HTTPS redirection:
+//app.UseAntiforgery();
+
 // Refactored API Endpoints
+
+app.MapPost("/api/competitions/{competitionId}/matches",
+    async (Guid competitionId, IFormFile file, IMediator mediator) =>
+    {
+        if (file.Length == 0)
+        {
+            return Results.BadRequest("File is empty.");
+        }
+
+        var command = new UploadMatchStatsCommand(competitionId, file);
+        var matchId = await mediator.Send(command);
+
+        return Results.Created($"/api/matches/{matchId}", new { matchId });
+    })
+.Accepts<IFormFile>("multipart/form-data") // Hint for Swagger
+.Produces(201)
+.Produces(400)
+.DisableAntiforgery();
+
 app.MapGet("/api/competitions", async (IMediator mediator) =>
 {
     var competitions = await mediator.Send(new GetAllCompetitionsQuery());
