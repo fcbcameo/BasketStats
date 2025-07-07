@@ -12,6 +12,7 @@ using BasketStats.Infrastructure.Persistence;
 using BasketStats.Infrastructure.Persistence.Repositories;
 using BasketStats.Infrastructure.Services;
 using BasketStats.Web.Middleware;
+using BasketStats.Application.Matches.Commands.DeleteMatch;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -192,6 +193,28 @@ app.MapGet("/api/team/stats",
         var result = await mediator.Send(query);
         return Results.Ok(result);
     });
+
+app.MapDelete("/api/matches/{matchId:guid}", async (Guid matchId, IMediator mediator) =>
+{
+    await mediator.Send(new DeleteMatchCommand(matchId));
+    return Results.NoContent(); // 204 No Content is the standard response for a successful delete
+})
+.WithName("DeleteMatch")
+.Produces(204)
+.Produces(404);
+
+app.MapGet("/api/matches", async (IMatchRepository repo) =>
+{
+    var matches = await repo.GetAllAsync();
+    var dtos = matches.Select(m => new MatchDto
+    {
+        Id = m.Id,
+        MatchDate = m.MatchDate,
+        CompetitionId = m.CompetitionId,
+        PlayerStatCount = m.PlayerStats.Count
+    });
+    return Results.Ok(dtos);
+});
 
 app.Run();
 

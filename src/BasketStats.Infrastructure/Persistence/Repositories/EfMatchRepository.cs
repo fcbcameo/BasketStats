@@ -24,4 +24,18 @@ public class EfMatchRepository : IMatchRepository
     {
         return await _context.Matches.ToListAsync();
     }
+    
+    public async Task<Match?> GetByIdAsync(Guid id)
+    {
+        // Use Include to also get the child PlayerStats records
+        return await _context.Matches
+            .Include(m => m.PlayerStats)
+            .FirstOrDefaultAsync(m => m.Id == id);
+    }
+
+    public async Task DeleteAsync(Match match)
+    {
+        _context.Matches.Remove(match);
+        await _context.SaveChangesAsync();
+    }
 }
