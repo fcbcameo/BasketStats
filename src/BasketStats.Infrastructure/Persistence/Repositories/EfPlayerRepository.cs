@@ -29,4 +29,9 @@ public class EfPlayerRepository : IPlayerRepository
     {
         return await _context.Players.FirstOrDefaultAsync(p => p.Name == name);
     }
+
+    public async Task<IEnumerable<Player>> GetAllAsync()
+    {
+        return await _context.Players.ToListAsync();
+    }
 }

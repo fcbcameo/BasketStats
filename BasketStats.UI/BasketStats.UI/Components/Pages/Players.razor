@@ -1,0 +1,42 @@
+﻿@page "/players"
+@rendermode InteractiveServer
+
+@using BasketStats.Application.DTOs 
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>All Players</PageTitle>
+
+<h1>All Players</h1>
+
+@if (players == null)
+{
+    <p><em>Loading players...</em></p>
+}
+else
+{
+    <table class="table">
+        <tbody>
+            @foreach (var player in players)
+            {
+                <tr>
+                    <td>@player.Name</td>
+                    <td>
+                        <a href="@($"players/{player.Id}/stats")" class="btn btn-sm btn-secondary">View Stats</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private PlayerDto[]? players;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = HttpClientFactory.CreateClient("Api");
+        players = await client.GetFromJsonAsync<PlayerDto[]>("api/players");
+    }
+
+    
+}
