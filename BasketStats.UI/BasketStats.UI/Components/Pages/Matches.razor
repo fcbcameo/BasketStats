@@ -1,0 +1,70 @@
+﻿@page "/matches"
+@rendermode InteractiveServer
+
+@using BasketStats.Application.DTOs
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JSRuntime
+
+<PageTitle>All Matches</PageTitle>
+
+<h1>All Matches</h1>
+
+@if (matches == null)
+{
+    <p><em>Loading matches...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Match Date</th>
+                <th>Player Stats Uploaded</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var match in matches)
+            {
+                <tr>
+                    <td>@match.MatchDate.ToShortDateString()</td>
+                    <td>@match.PlayerStatCount</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteMatch(match.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<MatchDto>? matches;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMatches();
+    }
+
+    private async Task LoadMatches()
+    {
+        var client = HttpClientFactory.CreateClient("Api");
+        matches = await client.GetFromJsonAsync<List<MatchDto>>("api/matches");
+    }
+
+    private async Task DeleteMatch(Guid matchId)
+    {
+        // Use a JavaScript confirmation dialog
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this match?");
+        if (confirmed)
+        {
+            var client = HttpClientFactory.CreateClient("Api");
+            var response = await client.DeleteAsync($"api/matches/{matchId}");
+            if (response.IsSuccessStatusCode)
+            {
+                // Refresh the list after deleting
+                await LoadMatches();
+            }
+        }
+    }
+}
