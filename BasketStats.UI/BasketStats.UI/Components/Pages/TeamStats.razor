@@ -1,0 +1,63 @@
+﻿@page "/team-stats"
+@rendermode InteractiveServer
+
+@using BasketStats.Application.DTOs
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>Team Stats</PageTitle>
+
+<h1>Team Season Stats</h1>
+
+@if (stats == null)
+{
+    <p><em>Loading team stats...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Overall Performance</h4>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Games Played
+                    <span class="badge bg-primary rounded-pill">@stats.GamesPlayed</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Points Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.PointsPerGame.ToString("F1")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Total Points
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalPoints</span>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h4>Shooting</h4>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    3-Pointers Made
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalThreePointersMade</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    3-Pointers Attempted
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalThreePointersAttempted</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    3-Point Percentage
+                    <span class="badge bg-success rounded-pill">@stats.ThreePointPercentage.ToString("F1")%</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+}
+
+@code {
+    private TeamSeasonStatsDto? stats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = HttpClientFactory.CreateClient("Api");
+        stats = await client.GetFromJsonAsync<TeamSeasonStatsDto>("api/team/stats");
+    }
+}
