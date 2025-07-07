@@ -1,0 +1,50 @@
+﻿@page "/players/{PlayerId:guid}/stats"
+@rendermode InteractiveServer
+
+@using BasketStats.Application.DTOs
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>Player Stats</PageTitle>
+
+@if (stats == null)
+{
+    <p><em>Loading stats...</em></p>
+}
+else
+{
+    <h3>Stats for @stats.PlayerName</h3>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Overview</h4>
+            <p><strong>Games Played:</strong> @stats.GamesPlayed</p>
+            <p><strong>Total Points:</strong> @stats.TotalPoints</p>
+            <p><strong>Total Rebounds:</strong> @stats.TotalRebounds</p>
+            <p><strong>Total Assists:</strong> @stats.TotalAssists</p>
+        </div>
+        <div class="col-md-6">
+            <h4>Shooting</h4>
+            <p>
+                <strong>Field Goals:</strong> @stats.TotalFieldGoalsMade / @stats.TotalFieldGoalsAttempted
+                (@stats.FieldGoalPercentage.ToString("F1")%)
+            </p>
+            <p>
+                <strong>3-Pointers:</strong> @stats.TotalThreePointersMade / @stats.TotalThreePointersAttempted
+                (@stats.ThreePointPercentage.ToString("F1")%)
+            </p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid PlayerId { get; set; }
+
+    private PlayerSeasonStatsDto? stats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = HttpClientFactory.CreateClient("Api");
+        stats = await client.GetFromJsonAsync<PlayerSeasonStatsDto>($"api/players/{PlayerId}/stats");
+    }
+}

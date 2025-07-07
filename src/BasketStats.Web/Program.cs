@@ -2,6 +2,7 @@
 using BasketStats.Application.Common.Behaviors;
 using BasketStats.Application.Competitions.Commands.CreateCompetition;
 using BasketStats.Application.Competitions.Queries.GetAllCompetitions;
+using BasketStats.Application.DTOs;
 using BasketStats.Application.Matches.Commands.UploadMatchStats;
 using BasketStats.Application.Players.Queries.GetPlayerSeasonStats;
 using BasketStats.Application.Services;
@@ -154,10 +155,23 @@ app.MapGet("/api/players", async (IPlayerRepository repo) =>
 {
     // We need to cast to the concrete type to access the helper method.
     // This is okay for a temporary, in-memory testing scenario.
-    if (repo is InMemoryPlayerRepository playerRepo)
+    if (repo is EfPlayerRepository playerRepo)
     {
         var players = await playerRepo.GetAllAsync();
-        return Results.Ok(players);
+
+        if (players is null || !players.Any())
+        {
+            return Results.NotFound("No players found.");
+        }
+
+        // Ensure you are returning the shared DTO
+        var playerDtos = players.Select(p => new PlayerDto
+        {
+            Id = p.Id,
+            Name = p.Name
+        }).ToList();
+
+        return Results.Ok(playerDtos);
     }
     return Results.NotFound();
 });
