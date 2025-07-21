@@ -24,8 +24,4 @@ public record PlayerStats
     public int PersonalFouls { get; init; }
     public int OffensiveRebounds { get; init; }
     public int DefensiveRebounds { get; init; }
-    
-
-
-    
 }

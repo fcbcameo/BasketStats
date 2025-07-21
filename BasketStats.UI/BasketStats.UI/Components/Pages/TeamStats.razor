@@ -18,34 +18,79 @@ else
         <div class="col-md-6">
             <h4>Overall Performance</h4>
             <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Games Played
+                <li class="list-group-item d-flex justify-content-between align-items-center">Games Played
                     <span class="badge bg-primary rounded-pill">@stats.GamesPlayed</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Points Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.PointsPerGame.ToString("F1")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Total Points
+                <li class="list-group-item d-flex justify-content-between align-items-center">Total Points
                     <span class="badge bg-secondary rounded-pill">@stats.TotalPoints</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Points Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.PointsPerGame.ToString("F2")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Total Assists
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalAssists</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Assists Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.AssistsPerGame.ToString("F2")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Total Rebounds
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalRebounds</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Rebounds Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.ReboundsPerGame.ToString("F2")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Offensive Rebounds
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalOffensiveRebounds</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Offensive Rebounds Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.OffensiveReboundsPerGame.ToString("F2")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Defensive Rebounds
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalDefensiveRebounds</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Defensive Rebounds Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.DefensiveReboundsPerGame.ToString("F2")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Steals
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalSteals</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Steals Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.StealsPerGame.ToString("F2")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Blocks
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalBlocks</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Blocks Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.BlocksPerGame.ToString("F2")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Turnovers
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalTurnovers</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Turnovers Per Game
+                    <span class="badge bg-primary rounded-pill">@stats.TurnoversPerGame.ToString("F2")</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Personal Fouls
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalPersonalFouls</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Minutes Played
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalMinutes</span>
                 </li>
             </ul>
         </div>
         <div class="col-md-6">
             <h4>Shooting</h4>
             <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    3-Pointers Made
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalThreePointersMade</span>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Field Goals
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalFieldGoalsMade / @stats.TotalFieldGoalsAttempted (@stats.FieldGoalPercentage.ToString("F1")%)</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    3-Pointers Attempted
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalThreePointersAttempted</span>
+                <li class="list-group-item d-flex justify-content-between align-items-center">2-Pointers
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalTwoPointersMade / @stats.TotalTwoPointersAttempted (@stats.TwoPointPercentage.ToString("F1")%)</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    3-Point Percentage
-                    <span class="badge bg-success rounded-pill">@stats.ThreePointPercentage.ToString("F1")%</span>
+                <li class="list-group-item d-flex justify-content-between align-items-center">3-Pointers
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalThreePointersMade / @stats.TotalThreePointersAttempted (@stats.ThreePointPercentage.ToString("F1")%)</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Free Throws
+                    <span class="badge bg-secondary rounded-pill">@stats.TotalFreeThrowsMade / @stats.TotalFreeThrowsAttempted (@stats.FreeThrowPercentage.ToString("F1")%)</span>
                 </li>
             </ul>
         </div>
