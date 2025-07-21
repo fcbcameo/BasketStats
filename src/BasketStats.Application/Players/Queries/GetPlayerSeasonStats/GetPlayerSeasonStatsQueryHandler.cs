@@ -60,7 +60,12 @@ public class GetPlayerSeasonStatsQueryHandler : IRequestHandler<GetPlayerSeasonS
         int totalGames = relevantStats.Count;
         int totalPlayers = relevantStats.Count;
         int totalRebounds = totalOffensiveRebounds + totalDefensiveRebounds;
-        //TODO: add info?
+        // Removed: int totalPlusMinus = relevantStats.Sum(s => s.PlusMinus);
+        // Removed: int totalChargesTaken = relevantStats.Sum(s => s.ChargesTaken);
+        // Removed: int totalTechnicalFouls = relevantStats.Sum(s => s.TechnicalFouls);
+        // Removed: double totalGameScore = relevantStats.Sum(s => s.GameScore);
+        // eFG% and TS% are calculated in the DTO
+        // TSA is calculated in the DTO
 
         // 5. Create the response DTO
         var result = new PlayerSeasonStatsDto

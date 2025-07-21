@@ -23,5 +23,11 @@ public class ParsedPlayerStat
     public int PersonalFouls { get; init; }
     public int OffensiveRebounds { get; init; }
     public int DefensiveRebounds { get; init; }
-
+    public int PlusMinus { get; init; } // PM
+    public int ChargesTaken { get; init; } // CHG
+    public int TechnicalFouls { get; init; } // TF
+    public double GameScore { get; init; } // GmSc
+    public double EffectiveFieldGoalPercentage { get; init; } // eFG%
+    public int TrueShootingAttempts { get; init; } // TSA
+    public double TrueShootingPercentage { get; init; } // TS%
 }

@@ -19,19 +19,45 @@ else
             <h4>Overview</h4>
             <p><strong>Games Played:</strong> @stats.GamesPlayed</p>
             <p><strong>Total Points:</strong> @stats.TotalPoints</p>
+            <p><strong>Points Per Game:</strong> @stats.PointsPerGame.ToString("F2")</p>
             <p><strong>Total Rebounds:</strong> @stats.TotalRebounds</p>
+            <p><strong>Rebounds Per Game:</strong> @stats.ReboundsPerGame.ToString("F2")</p>
             <p><strong>Total Assists:</strong> @stats.TotalAssists</p>
+            <p><strong>Assists Per Game:</strong> @stats.AssistsPerGame.ToString("F2")</p>
         </div>
         <div class="col-md-6">
             <h4>Shooting</h4>
-            <p>
-                <strong>Field Goals:</strong> @stats.TotalFieldGoalsMade / @stats.TotalFieldGoalsAttempted
-                (@stats.FieldGoalPercentage.ToString("F1")%)
-            </p>
-            <p>
-                <strong>3-Pointers:</strong> @stats.TotalThreePointersMade / @stats.TotalThreePointersAttempted
-                (@stats.ThreePointPercentage.ToString("F1")%)
-            </p>
+            <p><strong>Field Goals:</strong> @stats.TotalFieldGoalsMade / @stats.TotalFieldGoalsAttempted (@stats.FieldGoalPercentage.ToString("F1")%)</p>
+            <p><strong>2-Pointers:</strong> @stats.TotalTwoPointersMade / @stats.TotalTwoPointersAttempted (@stats.TwoPointPercentage.ToString("F1")%)</p>
+            <p><strong>3-Pointers:</strong> @stats.TotalThreePointersMade / @stats.TotalThreePointersAttempted (@stats.ThreePointPercentage.ToString("F1")%)</p>
+            <p><strong>Free Throws:</strong> @stats.TotalFreeThrowsMade / @stats.TotalFreeThrowsAttempted (@stats.FreeThrowPercentage.ToString("F1")%)</p>
+            <p><strong>Effective FG% (eFG%):</strong> @stats.EffectiveFieldGoalPercentage.ToString("F1")%</p>
+            <p><strong>True Shooting Attempts (TSA):</strong> @stats.TrueShootingAttempts</p>
+            <p><strong>True Shooting % (TS%):</strong> @stats.TrueShootingPercentage.ToString("F1")%</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Other Stats</h4>
+            <p><strong>Offensive Rebounds:</strong> @stats.TotalOffensiveRebounds</p>
+            <p><strong>Offensive Rebounds Per Game:</strong> @stats.OffensiveReboundsPerGame.ToString("F2")</p>
+            <p><strong>Defensive Rebounds:</strong> @stats.TotalDefensiveRebounds</p>
+            <p><strong>Defensive Rebounds Per Game:</strong> @stats.DefensiveReboundsPerGame.ToString("F2")</p>
+            <p><strong>Steals:</strong> @stats.TotalSteals</p>
+            <p><strong>Steals Per Game:</strong> @stats.StealsPerGame.ToString("F2")</p>
+            <p><strong>Blocks:</strong> @stats.TotalBlocks</p>
+            <p><strong>Blocks Per Game:</strong> @stats.BlocksPerGame.ToString("F2")</p>
+            <p><strong>Turnovers:</strong> @stats.TotalTurnovers</p>
+            <p><strong>Turnovers Per Game:</strong> @stats.TurnoversPerGame.ToString("F2")</p>
+            <p><strong>Personal Fouls:</strong> @stats.TotalPersonalFouls</p>
+            <p><strong>Personal Fouls Per Game:</strong> @stats.PersonalFoulsPerGame.ToString("F2")</p>
+            <p><strong>Minutes Played:</strong> @stats.TotalMinutes</p>
+            <p><strong>Minutes Per Game:</strong> @stats.MinutesPerGame.ToString("F2")</p>
+        </div>
+        <div class="col-md-6">
+            <h4>Advanced</h4>
+            <p><strong>Assist/Turnover Ratio (A/T):</strong> @stats.AssistToTurnoverRatio.ToString("F2")</p>
+            <p><strong>Efficiency (EFF):</strong> @stats.Efficiency.ToString("F2")</p>
         </div>
     </div>
 }

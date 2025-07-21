@@ -48,21 +48,11 @@ public class PlayerSeasonStatsDto
     public double UsageRate => GamesPlayed > 0 ? (TotalFieldGoalsAttempted + TotalFreeThrowsAttempted + TotalTurnovers) / (double)(GamesPlayed * 20) : 0;
     public double WinShares => GamesPlayed > 0 ? (TotalPoints + TotalRebounds + TotalAssists + TotalSteals + TotalBlocks - TotalTurnovers - TotalPersonalFouls) / (double)(GamesPlayed * 10) : 0;
     public double PlayerEfficiencyRating => GamesPlayed > 0 ? (TotalPoints + TotalRebounds + TotalAssists + TotalSteals + TotalBlocks - TotalTurnovers - TotalPersonalFouls) / (double)(GamesPlayed * 15) : 0;
-    public double TrueShootingPercentage => GamesPlayed > 0 ? (TotalPoints / (2 * (TotalFieldGoalsAttempted + 0.44 * TotalFreeThrowsAttempted))) : 0;
-    public double OffensiveRating => GamesPlayed > 0 ? (TotalPoints + TotalAssists * 0.5 + TotalRebounds * 0.3) / (TotalFieldGoalsAttempted + TotalTurnovers) : 0;
-    public double DefensiveRating => GamesPlayed > 0 ? (TotalPoints + TotalRebounds * 0.3 + TotalSteals * 0.5 + TotalBlocks * 0.7) / (TotalFieldGoalsAttempted + TotalTurnovers) : 0;
+    public double EffectiveFieldGoalPercentage => TotalFieldGoalsAttempted > 0 ? (TotalFieldGoalsMade + 0.5 * TotalThreePointersMade) / TotalFieldGoalsAttempted * 100 : 0; // eFG%
+    public int TrueShootingAttempts => TotalFieldGoalsAttempted + 0.44 * TotalFreeThrowsAttempted > 0 ? (int)(TotalFieldGoalsAttempted + 0.44 * TotalFreeThrowsAttempted) : 0; // TSA
+    public double TrueShootingPercentage => TrueShootingAttempts > 0 ? (double)TotalPoints / (2 * TrueShootingAttempts) * 100 : 0; // TS%
     public double AssistToTurnoverRatio => TotalTurnovers > 0 ? (double)TotalAssists / TotalTurnovers : TotalAssists; // Avoid division by zero
-    public double PointsPerAssist => TotalAssists > 0 ? (double)TotalPoints / TotalAssists : TotalPoints; // Avoid division by zero
-    public double PointsPerRebound => TotalRebounds > 0 ? (double)TotalPoints / TotalRebounds : TotalPoints; // Avoid division by zero
-    public double PointsPerTurnover => TotalTurnovers > 0 ? (double)TotalPoints / TotalTurnovers : TotalPoints; // Avoid division by zero
-    public double PointsPerFieldGoalAttempt => TotalFieldGoalsAttempted > 0 ? (double)TotalPoints / TotalFieldGoalsAttempted : TotalPoints; // Avoid division by zero
-    public double PointsPerFreeThrowAttempt => TotalFreeThrowsAttempted > 0 ? (double)TotalPoints / TotalFreeThrowsAttempted : TotalPoints; // Avoid division by zero
-    public double PointsPerTwoPointerAttempt => TotalTwoPointersAttempted > 0 ? (double)TotalPoints / TotalTwoPointersAttempted : TotalPoints; // Avoid division by zero
-    public double PointsPerThreePointerAttempt => TotalThreePointersAttempted > 0 ? (double)TotalPoints / TotalThreePointersAttempted : TotalPoints; // Avoid division by zero
-    public double PointsPerOffensiveRebound => TotalOffensiveRebounds > 0 ? (double)TotalPoints / TotalOffensiveRebounds : TotalPoints; // Avoid division by zero
-    public double PointsPerDefensiveRebound => TotalDefensiveRebounds > 0 ? (double)TotalPoints / TotalDefensiveRebounds : TotalPoints; // Avoid division by zero
-    public double PointsPerMinute => TotalMinutes > 0 ? (double)TotalPoints / TotalMinutes : TotalPoints; // Avoid division by zero
-    
+
 
     // You can add many more stats here (e.g., PPG, RPG, other percentages)
 }
