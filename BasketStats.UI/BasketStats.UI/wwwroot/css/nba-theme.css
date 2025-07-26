@@ -1,0 +1,98 @@
+/* NBA-inspired theme */
+:root {
+    --nba-blue: #1D428A;
+    --nba-red: #C8102E;
+    --nba-light-gray: #f8f9fa;
+    --nba-dark-gray: #343a40;
+    --nba-text-light: #ffffff;
+    --nba-text-dark: #212529;
+}
+
+body {
+    background-color: var(--nba-dark-gray);
+    color: var(--nba-text-light);
+    font-family: 'Roboto', sans-serif;
+}
+
+.navbar {
+    background-color: var(--nba-blue);
+    border-bottom: 3px solid var(--nba-red);
+}
+
+.navbar-brand img {
+    height: 40px;
+}
+
+.nav-link {
+    color: var(--nba-text-light) !important;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--nba-red) !important;
+}
+
+.page {
+    padding: 2rem;
+}
+
+h1, h3, h4 {
+    color: var(--nba-text-light);
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--nba-red);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.table {
+    background-color: #2c3034;
+    color: var(--nba-text-light);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table th, .table td {
+    border-color: var(--nba-dark-gray);
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: var(--nba-blue);
+    color: var(--nba-text-light);
+    text-transform: uppercase;
+}
+
+.list-group-item {
+    background-color: #2c3034;
+    border-color: var(--nba-dark-gray);
+    color: var(--nba-text-light);
+}
+
+.badge.bg-primary {
+    background-color: var(--nba-blue) !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.btn-primary {
+    background-color: var(--nba-blue);
+    border-color: var(--nba-blue);
+}
+
+.btn-primary:hover {
+    background-color: #16346e;
+    border-color: #16346e;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
