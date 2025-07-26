@@ -1,0 +1,53 @@
+﻿<div class="top-row navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">
+            <img src="images/basketballstats.png" alt="BasketStats Logo" />
+            BasketStats
+        </a>
+        <button class="navbar-toggler d-md-none" type="button" onclick="toggleSidebar()">
+            <span class="bi bi-list"></span>
+        </button>
+    </div>
+</div>
+
+<div class="nav-scrollable">
+    <nav class="flex-column">
+        <div class="nav-item">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill" aria-hidden="true"></span>
+                <span>Home</span>
+            </NavLink>
+        </div>
+        <div class="nav-item">
+            <NavLink class="nav-link" href="players">
+                <span class="bi bi-person-lines-fill" aria-hidden="true"></span>
+                <span>Players</span>
+            </NavLink>
+        </div>
+        <div class="nav-item">
+            <NavLink class="nav-link" href="team-stats">
+                <span class="bi bi-people-fill" aria-hidden="true"></span>
+                <span>Team Stats</span>
+            </NavLink>
+        </div>
+        <div class="nav-item">
+            <NavLink class="nav-link" href="competitions">
+                <span class="bi bi-trophy-fill" aria-hidden="true"></span>
+                <span>Competitions</span>
+            </NavLink>
+        </div>
+        <div class="nav-item">
+            <NavLink class="nav-link" href="matches">
+                <span class="bi bi-calendar-event-fill" aria-hidden="true"></span>
+                <span>Matches</span>
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('open');
+    }
+</script>
