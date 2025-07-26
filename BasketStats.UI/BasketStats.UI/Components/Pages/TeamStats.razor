@@ -2,107 +2,217 @@
 @rendermode InteractiveServer
 
 @using BasketStats.Application.DTOs
+@using BasketStats.Application.Competitions.Queries.GetAllCompetitions
 @inject IHttpClientFactory HttpClientFactory
 
 <PageTitle>Team Stats</PageTitle>
 
 <h1>Team Season Stats</h1>
 
-@if (stats == null)
+@if (competitions == null)
 {
-    <p><em>Loading team stats...</em></p>
+    <div class="loading">
+        <em>Loading competitions...</em>
+    </div>
 }
 else
 {
-    <div class="row">
-        <div class="col-md-6">
-            <h4>Overall Performance</h4>
-            <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">Games Played
-                    <span class="badge bg-primary rounded-pill">@stats.GamesPlayed</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Total Points
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalPoints</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Points Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.PointsPerGame.ToString("F2")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Total Assists
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalAssists</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Assists Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.AssistsPerGame.ToString("F2")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Total Rebounds
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalRebounds</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Rebounds Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.ReboundsPerGame.ToString("F2")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Offensive Rebounds
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalOffensiveRebounds</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Offensive Rebounds Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.OffensiveReboundsPerGame.ToString("F2")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Defensive Rebounds
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalDefensiveRebounds</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Defensive Rebounds Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.DefensiveReboundsPerGame.ToString("F2")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Steals
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalSteals</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Steals Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.StealsPerGame.ToString("F2")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Blocks
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalBlocks</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Blocks Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.BlocksPerGame.ToString("F2")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Turnovers
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalTurnovers</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Turnovers Per Game
-                    <span class="badge bg-primary rounded-pill">@stats.TurnoversPerGame.ToString("F2")</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Personal Fouls
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalPersonalFouls</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Minutes Played
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalMinutes</span>
-                </li>
-            </ul>
-        </div>
-        <div class="col-md-6">
-            <h4>Shooting</h4>
-            <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">Field Goals
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalFieldGoalsMade / @stats.TotalFieldGoalsAttempted (@stats.FieldGoalPercentage.ToString("F1")%)</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">2-Pointers
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalTwoPointersMade / @stats.TotalTwoPointersAttempted (@stats.TwoPointPercentage.ToString("F1")%)</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">3-Pointers
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalThreePointersMade / @stats.TotalThreePointersAttempted (@stats.ThreePointPercentage.ToString("F1")%)</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Free Throws
-                    <span class="badge bg-secondary rounded-pill">@stats.TotalFreeThrowsMade / @stats.TotalFreeThrowsAttempted (@stats.FreeThrowPercentage.ToString("F1")%)</span>
-                </li>
-            </ul>
+    <div class="stats-card">
+        <h3>Filter by Competition</h3>
+        <div class="row align-items-end">
+            <div class="col-md-6">
+                <label for="competitionSelect" class="form-label">Select Competition:</label>
+                <select id="competitionSelect" class="form-select" @onchange="OnCompetitionChanged">
+                    <option value="">All Competitions (Aggregated)</option>
+                    @foreach (var competition in competitions)
+                    {
+                        <option value="@competition.Id" selected="@(selectedCompetitionId == competition.Id)">
+                            @competition.Name
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                @if (selectedCompetitionId.HasValue)
+                {
+                    <p class="text-info">Showing stats for: <strong>@GetSelectedCompetitionName()</strong></p>
+                }
+                else
+                {
+                    <p class="text-info">Showing aggregated stats for <strong>all competitions</strong></p>
+                }
+            </div>
         </div>
     </div>
+
+    @if (stats == null)
+    {
+        <div class="loading">
+            <em>Loading team stats...</em>
+        </div>
+    }
+    else
+    {
+        <div class="stats-grid">
+            <div class="stats-card">
+                <h3>Team Overview</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Games Played</span>
+                    <span class="stat-value">@stats.GamesPlayed</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Points</span>
+                    <span class="stat-value">@stats.TotalPoints</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Points Per Game</span>
+                    <span class="stat-value">@stats.PointsPerGame.ToString("F1")</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Assists</span>
+                    <span class="stat-value">@stats.TotalAssists</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Assists Per Game</span>
+                    <span class="stat-value">@stats.AssistsPerGame.ToString("F1")</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Rebounds</span>
+                    <span class="stat-value">@stats.TotalRebounds</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Rebounds Per Game</span>
+                    <span class="stat-value">@stats.ReboundsPerGame.ToString("F1")</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h3>Shooting Performance</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Field Goal %</span>
+                    <span class="stat-value">@stats.FieldGoalPercentage.ToString("F1")%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Field Goals</span>
+                    <span class="stat-value">@stats.TotalFieldGoalsMade / @stats.TotalFieldGoalsAttempted</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">3-Point %</span>
+                    <span class="stat-value">@stats.ThreePointPercentage.ToString("F1")%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">3-Pointers</span>
+                    <span class="stat-value">@stats.TotalThreePointersMade / @stats.TotalThreePointersAttempted</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">2-Point %</span>
+                    <span class="stat-value">@stats.TwoPointPercentage.ToString("F1")%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">2-Pointers</span>
+                    <span class="stat-value">@stats.TotalTwoPointersMade / @stats.TotalTwoPointersAttempted</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Free Throw %</span>
+                    <span class="stat-value">@stats.FreeThrowPercentage.ToString("F1")%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Free Throws</span>
+                    <span class="stat-value">@stats.TotalFreeThrowsMade / @stats.TotalFreeThrowsAttempted</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stats-card">
+                <h3>Rebounding & Defense</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Offensive Rebounds</span>
+                    <span class="stat-value">@stats.TotalOffensiveRebounds (@stats.OffensiveReboundsPerGame.ToString("F1")/game)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Defensive Rebounds</span>
+                    <span class="stat-value">@stats.TotalDefensiveRebounds (@stats.DefensiveReboundsPerGame.ToString("F1")/game)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Steals</span>
+                    <span class="stat-value">@stats.TotalSteals (@stats.StealsPerGame.ToString("F1")/game)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Blocks</span>
+                    <span class="stat-value">@stats.TotalBlocks (@stats.BlocksPerGame.ToString("F1")/game)</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h3>Other Statistics</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Turnovers</span>
+                    <span class="stat-value">@stats.TotalTurnovers (@stats.TurnoversPerGame.ToString("F1")/game)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Personal Fouls</span>
+                    <span class="stat-value">@stats.TotalPersonalFouls</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Minutes</span>
+                    <span class="stat-value">@stats.TotalMinutes</span>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @code {
     private TeamSeasonStatsDto? stats;
+    private CompetitionDto[]? competitions;
+    private Guid? selectedCompetitionId;
 
     protected override async Task OnInitializedAsync()
     {
         var client = HttpClientFactory.CreateClient("Api");
-        stats = await client.GetFromJsonAsync<TeamSeasonStatsDto>("api/team/stats");
+        
+        // Load competitions
+        competitions = await client.GetFromJsonAsync<CompetitionDto[]>("api/competitions");
+        
+        // Load initial stats (all competitions)
+        await LoadTeamStats();
+    }
+
+    private async Task OnCompetitionChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            selectedCompetitionId = null;
+        }
+        else if (Guid.TryParse(e.Value.ToString(), out var competitionId))
+        {
+            selectedCompetitionId = competitionId;
+        }
+
+        await LoadTeamStats();
+    }
+
+    private async Task LoadTeamStats()
+    {
+        var client = HttpClientFactory.CreateClient("Api");
+        var url = "api/team/stats";
+        
+        if (selectedCompetitionId.HasValue)
+        {
+            url += $"?competitionId={selectedCompetitionId.Value}";
+        }
+        
+        stats = await client.GetFromJsonAsync<TeamSeasonStatsDto>(url);
+    }
+
+    private string GetSelectedCompetitionName()
+    {
+        if (selectedCompetitionId.HasValue && competitions != null)
+        {
+            var competition = competitions.FirstOrDefault(c => c.Id == selectedCompetitionId.Value);
+            return competition?.Name ?? "Unknown Competition";
+        }
+        return "All Competitions";
     }
 }
