@@ -40,7 +40,9 @@ body {
 }
 
 .sidebar {
-    width: 280px;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
     background-color: var(--nba-sidebar-bg);
     border-right: 1px solid var(--nba-border-color);
     position: fixed;
@@ -48,6 +50,7 @@ body {
     overflow-y: auto;
     z-index: 1000;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    overflow: visible;
 }
 
 main {
@@ -190,6 +193,46 @@ h4 {
     color: var(--nba-text-secondary);
     margin-bottom: 1rem;
     text-transform: uppercase;
+}
+
+/* Form Controls */
+.form-label {
+    color: var(--nba-text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.form-select, .form-control {
+    background-color: var(--nba-card-bg);
+    border: 1px solid var(--nba-border-color);
+    border-radius: 8px;
+    color: var(--nba-text-primary);
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.form-select:focus, .form-control:focus {
+    background-color: var(--nba-hover-bg);
+    border-color: var(--nba-primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(29, 66, 138, 0.25);
+    color: var(--nba-text-primary);
+    outline: 0;
+}
+
+.form-select option {
+    background-color: var(--nba-card-bg);
+    color: var(--nba-text-primary);
+}
+
+.text-info {
+    color: var(--nba-accent-orange) !important;
+    font-weight: 500;
+    font-size: 0.95rem;
 }
 
 /* Cards and Stats Display */
