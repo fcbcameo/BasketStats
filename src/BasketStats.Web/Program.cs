@@ -5,6 +5,7 @@ using BasketStats.Application.Competitions.Queries.GetAllCompetitions;
 using BasketStats.Application.DTOs;
 using BasketStats.Application.Matches.Commands.UploadMatchStats;
 using BasketStats.Application.Players.Queries.GetPlayerSeasonStats;
+using BasketStats.Application.Players.Queries.GetAllPlayersStats;
 using BasketStats.Application.Services;
 using BasketStats.Application.Teams.Queries.GetTeamSeasonStats;
 using BasketStats.Domain.Repositories;
@@ -184,6 +185,14 @@ app.MapGet("/api/players/{playerId}/stats",
         var result = await mediator.Send(query);
 
         return result is not null ? Results.Ok(result) : Results.NotFound();
+    });
+
+app.MapGet("/api/players/stats",
+    async ([FromQuery] Guid? competitionId, IMediator mediator) =>
+    {
+        var query = new GetAllPlayersStatsQuery(competitionId);
+        var result = await mediator.Send(query);
+        return Results.Ok(result);
     });
 
 app.MapGet("/api/team/stats",
