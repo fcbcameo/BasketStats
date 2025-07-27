@@ -1,4 +1,6 @@
 using BasketStats.UI.Components;
+using BasketStats.UI.Services;
+using Radzen;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+// Add Radzen services
+builder.Services.AddRadzenComponents();
+
+// Add NotificationService for Radzen notifications
+builder.Services.AddScoped<NotificationService>();
+
+// Add PDF Report Service
+builder.Services.AddScoped<PdfReportService>();
 
 // Add the HttpClient configuration  
 builder.Services.AddHttpClient("Api", client =>
@@ -32,8 +43,6 @@ builder.Services.Configure<JsonSerializerOptions>(options =>
 
 var app = builder.Build();
 
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -47,7 +56,6 @@ else
 }
 
 app.UseHttpsRedirection();
-
 
 app.UseAntiforgery();
 

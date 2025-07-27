@@ -407,6 +407,8 @@ h4 {
     color: var(--nba-text-secondary);
     font-style: italic;
     font-size: 1.1rem;
+    gap: 1rem;
+    flex-direction: column;
 }
 
 /* Error UI */
@@ -430,6 +432,156 @@ h4 {
     right: 1.5rem;
     top: 1rem;
     font-size: 1.2rem;
+}
+
+/* Radzen Component Styling */
+.rz-dropdown, .rz-dropdown-panel {
+    background-color: var(--nba-card-bg) !important;
+    border-color: var(--nba-border-color) !important;
+    color: var(--nba-text-primary) !important;
+}
+
+.rz-dropdown:hover, .rz-dropdown:focus {
+    background-color: var(--nba-hover-bg) !important;
+    border-color: var(--nba-primary-blue) !important;
+}
+
+.rz-dropdown-item {
+    background-color: var(--nba-card-bg) !important;
+    color: var(--nba-text-primary) !important;
+}
+
+.rz-dropdown-item:hover {
+    background-color: var(--nba-hover-bg) !important;
+    color: var(--nba-text-primary) !important;
+}
+
+/* Radzen DataGrid Styling */
+.rz-datatable, .rz-datatable-wrapper {
+    background-color: var(--nba-card-bg) !important;
+    border-color: var(--nba-border-color) !important;
+    color: var(--nba-text-primary) !important;
+}
+
+.rz-datatable-header, .rz-datatable-header th {
+    background: var(--nba-gradient) !important;
+    color: var(--nba-text-primary) !important;
+    border-color: var(--nba-border-color) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.5px !important;
+}
+
+.rz-datatable-data td {
+    background-color: var(--nba-card-bg) !important;
+    color: var(--nba-text-primary) !important;
+    border-color: var(--nba-border-color) !important;
+}
+
+.rz-datatable-data tr:hover td {
+    background-color: var(--nba-hover-bg) !important;
+}
+
+.rz-datatable-data tr:nth-child(even) td {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Radzen Paging */
+.rz-paginator {
+    background-color: var(--nba-card-bg) !important;
+    border-color: var(--nba-border-color) !important;
+    color: var(--nba-text-primary) !important;
+}
+
+.rz-paginator-page, .rz-paginator-pages-info {
+    color: var(--nba-text-primary) !important;
+}
+
+.rz-paginator-page:hover, .rz-paginator-page.rz-state-active {
+    background-color: var(--nba-primary-blue) !important;
+    color: var(--nba-text-primary) !important;
+}
+
+/* Radzen Button Styling */
+.rz-button {
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    text-transform: uppercase !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.3s ease !important;
+}
+
+.rz-button.rz-button-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
+}
+
+.rz-button.rz-button-success:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
+}
+
+.rz-button:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* Competition Selector */
+.competition-selector {
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid var(--nba-border-color);
+}
+
+.competition-selector h4 {
+    margin-bottom: 0.75rem;
+    color: var(--nba-accent-orange);
+    font-size: 1.1rem;
+}
+
+/* Export Section */
+.export-section {
+    border-top: 2px solid var(--nba-border-color);
+    padding-top: 1.5rem;
+    text-align: center;
+}
+
+.export-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.export-btn:hover:not(:disabled) {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
+}
+
+.export-btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* Radzen Progress Bar */
+.rz-progressbar-circular {
+    --rz-primary: var(--nba-primary-blue) !important;
 }
 
 /* Responsive Design */

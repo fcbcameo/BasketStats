@@ -1,0 +1,229 @@
+@page "/player-stats-overview"
+@rendermode InteractiveServer
+
+@using BasketStats.Application.DTOs
+@using BasketStats.Application.Competitions.Queries.GetAllCompetitions
+@using BasketStats.UI.Services
+@inject IHttpClientFactory HttpClientFactory
+@inject NotificationService NotificationService
+@inject PdfReportService PdfReportService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Player Stats Overview</PageTitle>
+
+<div class="stats-card">
+    <h1>Player Statistics Overview</h1>
+    
+    <div class="competition-selector mb-4">
+        <h4>Competition</h4>
+        <RadzenDropDown @bind-Value="selectedCompetitionId" 
+                        Data="@competitionOptions" 
+                        TextProperty="Text" 
+                        ValueProperty="Value"
+                        Placeholder="Select competition..." 
+                        Change="OnCompetitionChanged"
+                        Style="width: 300px" />
+    </div>
+
+    @if (playersStats == null)
+    {
+        <div class="loading">
+            <RadzenProgressBarCircular ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large" />
+            <span>Loading player statistics...</span>
+        </div>
+    }
+    else
+    {
+        <RadzenDataGrid @ref="dataGrid" 
+                        Data="@playersStats" 
+                        TItem="PlayerSeasonStatsDto"
+                        AllowPaging="true" 
+                        PageSize="20"
+                        AllowSorting="true" 
+                        AllowFiltering="false"
+                        PagerHorizontalAlign="HorizontalAlign.Left" 
+                        ShowPagingSummary="true"
+                        Class="stats-grid"
+                        Density="Density.Compact">
+            <Columns>
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="PlayerName" Title="Player" Width="180px" Frozen="true" Sortable="true">
+                    <Template Context="player">
+                        <strong style="color: var(--nba-accent-orange);">@player.PlayerName</strong>
+                    </Template>
+                </RadzenDataGridColumn>
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="GamesPlayed" Title="GP" Width="60px" TextAlign="TextAlign.Center" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="PointsPerGame" Title="PPG" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="ReboundsPerGame" Title="RPG" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="AssistsPerGame" Title="APG" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="FieldGoalPercentage" Title="FG%" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="ThreePointPercentage" Title="3P%" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="FreeThrowPercentage" Title="FT%" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="StealsPerGame" Title="SPG" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="BlocksPerGame" Title="BPG" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="TurnoversPerGame" Title="TOV" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="MinutesPerGame" Title="MPG" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="Efficiency" Title="EFF" Width="70px" TextAlign="TextAlign.Center" FormatString="{0:F1}" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="TotalPoints" Title="Total PTS" Width="90px" TextAlign="TextAlign.Center" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="TotalRebounds" Title="Total REB" Width="90px" TextAlign="TextAlign.Center" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="TotalAssists" Title="Total AST" Width="90px" TextAlign="TextAlign.Center" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="TotalSteals" Title="Total STL" Width="90px" TextAlign="TextAlign.Center" Sortable="true" />
+                
+                <RadzenDataGridColumn TItem="PlayerSeasonStatsDto" Property="TotalBlocks" Title="Total BLK" Width="90px" TextAlign="TextAlign.Center" Sortable="true" />
+            </Columns>
+        </RadzenDataGrid>
+        
+        <div class="export-section mt-4">
+            <RadzenButton Text="Export to PDF" 
+                         Icon="file_download" 
+                         ButtonStyle="ButtonStyle.Success" 
+                         Size="ButtonSize.Medium"
+                         Click="ExportToPdf" 
+                         Disabled="@(playersStats == null || !playersStats.Any() || isExporting)"
+                         Class="export-btn">
+                @if (isExporting)
+                {
+                    <RadzenProgressBarCircular ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Small" Style="margin-right: 8px;" />
+                    <span>Generating PDF...</span>
+                }
+                else
+                {
+                    <i class="bi bi-file-earmark-pdf" style="margin-right: 8px;"></i>
+                    <span>Export to PDF</span>
+                }
+            </RadzenButton>
+        </div>
+    }
+</div>
+
+@code {
+    private RadzenDataGrid<PlayerSeasonStatsDto>? dataGrid;
+    private IEnumerable<PlayerSeasonStatsDto>? playersStats;
+    private CompetitionDto[]? competitions;
+    private List<CompetitionOption> competitionOptions = new();
+    private Guid? selectedCompetitionId = null;
+    private bool isExporting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCompetitions();
+        await LoadPlayersStats();
+    }
+
+    private async Task LoadCompetitions()
+    {
+        try
+        {
+            var client = HttpClientFactory.CreateClient("Api");
+            competitions = await client.GetFromJsonAsync<CompetitionDto[]>("api/competitions");
+            
+            competitionOptions.Clear();
+            competitionOptions.Add(new CompetitionOption { Value = null, Text = "All Competitions (Aggregated)" });
+            
+            if (competitions != null)
+            {
+                foreach (var comp in competitions)
+                {
+                    competitionOptions.Add(new CompetitionOption { Value = comp.Id, Text = comp.Name });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error", $"Failed to load competitions: {ex.Message}");
+        }
+    }
+
+    private async Task LoadPlayersStats()
+    {
+        try
+        {
+            var client = HttpClientFactory.CreateClient("Api");
+            var url = "api/players/stats";
+            
+            if (selectedCompetitionId.HasValue)
+            {
+                url += $"?competitionId={selectedCompetitionId.Value}";
+            }
+            
+            playersStats = await client.GetFromJsonAsync<IEnumerable<PlayerSeasonStatsDto>>(url);
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error", $"Failed to load player statistics: {ex.Message}");
+            playersStats = new List<PlayerSeasonStatsDto>();
+        }
+    }
+
+    private async Task OnCompetitionChanged()
+    {
+        playersStats = null;
+        await LoadPlayersStats();
+        
+        if (dataGrid != null)
+        {
+            await dataGrid.FirstPage();
+        }
+    }
+
+    private async Task ExportToPdf()
+    {
+        if (playersStats == null || !playersStats.Any())
+        {
+            NotificationService.Notify(NotificationSeverity.Warning, "Warning", "No data available to export.");
+            return;
+        }
+
+        try
+        {
+            isExporting = true;
+            StateHasChanged();
+
+            // Get the selected competition name
+            var competitionName = competitionOptions.FirstOrDefault(c => c.Value == selectedCompetitionId)?.Text ?? "All Competitions (Aggregated)";
+            
+            // Generate PDF bytes
+            var pdfBytes = PdfReportService.GeneratePlayerStatsReport(playersStats, competitionName);
+            
+            // Create filename with competition name and timestamp
+            var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+            var sanitizedCompetitionName = string.Join("_", competitionName.Split(Path.GetInvalidFileNameChars()));
+            var fileName = $"PlayerStats_{sanitizedCompetitionName}_{timestamp}.pdf";
+            
+            // Download the file
+            await JSRuntime.InvokeVoidAsync("downloadFile", fileName, Convert.ToBase64String(pdfBytes));
+            
+            NotificationService.Notify(NotificationSeverity.Success, "Success", $"PDF report '{fileName}' has been generated successfully!");
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error", $"Failed to generate PDF: {ex.Message}");
+        }
+        finally
+        {
+            isExporting = false;
+            StateHasChanged();
+        }
+    }
+
+    public class CompetitionOption
+    {
+        public Guid? Value { get; set; }
+        public string Text { get; set; } = string.Empty;
+    }
+}
