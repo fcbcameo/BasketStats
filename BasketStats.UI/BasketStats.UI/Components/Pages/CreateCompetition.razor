@@ -1,5 +1,5 @@
 ﻿@page "/competitions/create"
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 
 @using BasketStats.UI.Models
 @inject IHttpClientFactory HttpClientFactory
@@ -17,7 +17,7 @@
     </div>
 }
 
-<EditForm Model="CompetitionModel" OnValidSubmit="HandleValidSubmit" FormName="CreateCompetitionForm">
+<EditForm Model="CompetitionModel" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
 
     <div class="mb-3">

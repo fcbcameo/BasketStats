@@ -44,7 +44,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateCompetitionCommand).Assembly));
 
-//builder.Services.AddAntiforgery();
+
 
 //builder.Services.AddSingleton<IPlayerRepository, InMemoryPlayerRepository>();
 //builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
@@ -78,17 +78,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// If you add authentication/authorization middleware, place them here:
-// app.UseAuthentication();
-// app.UseAuthorization();
+
 
 // If you use routing/endpoints, add them like this:
 // app.UseRouting();
 // app.UseAntiforgery();
 // app.UseEndpoints(endpoints => { /* map endpoints here */ });
 
-// For minimal APIs (as in your code), place app.UseAntiforgery() after HTTPS redirection:
-//app.UseAntiforgery();
+
 
 // Refactored API Endpoints
 
@@ -107,8 +104,7 @@ app.MapPost("/api/competitions/{competitionId}/matches",
     })
 .Accepts<IFormFile>("multipart/form-data") // Hint for Swagger
 .Produces(201)
-.Produces(400)
-.DisableAntiforgery();
+.Produces(400);
 
 app.MapGet("/api/competitions", async (IMediator mediator) =>
 {
