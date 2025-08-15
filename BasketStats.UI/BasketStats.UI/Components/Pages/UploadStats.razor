@@ -1,5 +1,5 @@
 ﻿@page "/competitions/{CompetitionId:guid}/upload"
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 
 @inject IHttpClientFactory HttpClientFactory
 @inject NavigationManager NavigationManager
@@ -9,7 +9,7 @@
 
 <h3>Upload Stats for Competition: @CompetitionId</h3>
 
-<EditForm Model="dummyModel" OnValidSubmit="HandleSubmit" FormName="UploadForm">
+<EditForm Model="dummyModel" OnValidSubmit="HandleSubmit">
     <div class="mb-3">
         <label for="file" class="form-label">Select Stats CSV File:</label>
         <InputFile OnChange="LoadFile" class="form-control" />
