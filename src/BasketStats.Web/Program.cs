@@ -37,6 +37,22 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "BasketStats API", Version = "v1" });
 });
 
+// CORS for Blazor and Angular dev hosts
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCors", policy =>
+        policy.WithOrigins(
+                "https://localhost:7275", // Blazor
+                "http://localhost:5196",
+                "https://localhost:7200", // Angular ASP.NET Core host
+                "http://localhost:4200",   // Angular CLI dev server
+                "https://localhost:4200"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
 // Register our repository for Dependency Injection
 //builder.Services.AddSingleton<ICompetitionRepository, InMemoryCompetitionRepository>();
 
@@ -77,6 +93,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable CORS for dev
+app.UseCors("DevCors");
 
 
 

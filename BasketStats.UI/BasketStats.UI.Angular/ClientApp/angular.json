@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json.schemastore.org/angularcli.json",
+  "version": 1,
+  "projects": {
+    "basketstats": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "targets": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": [
+              "zone.js",
+              "src/polyfills.ts"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "2MB", "maximumError": "5MB" }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "basketstats:build",
+            "port": 4200,
+            "host": "localhost"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "2a2127a1-3397-43a3-896f-3a4fc5e5eaa5"
+  }
+}

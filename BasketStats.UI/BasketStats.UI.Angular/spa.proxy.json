@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json.schemastore.org/saproj.json",
+  "server": {
+    "url": "http://localhost:4200",
+    "timeout": 120000
+  }
+}
