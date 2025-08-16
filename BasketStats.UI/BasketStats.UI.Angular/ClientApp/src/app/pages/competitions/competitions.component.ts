@@ -3,28 +3,35 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { CompetitionDto } from '../../models/dtos';
 import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   standalone: true,
   selector: 'app-competitions',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule],
   template: `
   <h1>Competitions</h1>
-  <div class="stats-card">
+  <mat-card class="stats-card">
     <h3>Create a New Competition</h3>
     <div style="display:flex; gap:8px; align-items:center">
-      <input class="form-control" [(ngModel)]="name" placeholder="Competition Name" />
-      <button class="btn btn-primary" (click)="create()">Create</button>
+      <mat-form-field appearance="fill" style="flex:1">
+        <mat-label>Competition Name</mat-label>
+        <input matInput [(ngModel)]="name" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="create()">Create</button>
     </div>
     <p class="text-info" *ngIf="error">{{error}}</p>
-  </div>
+  </mat-card>
 
-  <div class="stats-card">
+  <mat-card class="stats-card">
     <h3>All Competitions</h3>
     <ul>
       <li *ngFor="let c of competitions">{{c.name}}</li>
     </ul>
-  </div>
+  </mat-card>
   `
 })
 export class CompetitionsComponent implements OnInit {
@@ -32,18 +39,14 @@ export class CompetitionsComponent implements OnInit {
   name = '';
   error: string | null = null;
   constructor(private api: ApiService) {}
-  ngOnInit() {
-    this.load();
-  }
-  load() {
-    this.api.getCompetitions().subscribe((x: CompetitionDto[]) => this.competitions = x);
-  }
+  ngOnInit() { this.load(); }
+  load() { this.api.getCompetitions().subscribe(x => this.competitions = x); }
   create() {
     this.error = null;
     if (!this.name.trim()) { this.error = 'Name is required'; return; }
     this.api.createCompetition({ name: this.name.trim() }).subscribe({
       next: () => { this.name=''; this.load(); },
-      error: (e: any) => { this.error = 'Failed to create'; }
+      error: () => { this.error = 'Failed to create'; }
     });
   }
 }

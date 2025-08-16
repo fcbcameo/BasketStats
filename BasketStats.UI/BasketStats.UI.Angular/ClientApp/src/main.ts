@@ -1,6 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import { Routes, provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppComponent } from './app/app.component';
 import { HomeComponent } from './app/pages/home/home.component';
 import { PlayersComponent } from './app/pages/players/players.component';
@@ -26,5 +27,6 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     provideHttpClient(),
+    provideAnimations(),
   ]
 });

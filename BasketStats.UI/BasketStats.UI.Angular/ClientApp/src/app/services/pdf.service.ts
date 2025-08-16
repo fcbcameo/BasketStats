@@ -5,30 +5,28 @@ import { PlayerSeasonStatsDto } from '../models/dtos';
 
 @Injectable({ providedIn: 'root' })
 export class PdfService {
-  generatePlayerStatsReport(players: PlayerSeasonStatsDto[], competitionName: string) {
+  async generatePlayerStatsReport(players: PlayerSeasonStatsDto[], competitionName: string) {
     const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
 
-    // Header with gradient-like banner using rectangles
     const width = doc.internal.pageSize.getWidth();
-    doc.setFillColor(29, 66, 138);
+    const height = doc.internal.pageSize.getHeight();
+
+    // Header banner
+    doc.setFillColor(29, 66, 138); // nba blue
     doc.rect(0, 0, width, 60, 'F');
-    doc.setFillColor(201, 8, 42);
+    doc.setFillColor(201, 8, 42); // nba red
     doc.rect(0, 55, width, 5, 'F');
 
-    // Logo if available (served at /images)
-    const logo = new Image();
-    logo.src = '/images/basketballstats.png';
-    // Note: add image after it's loaded; jsPDF doesn't await image load in this simple service
-
+    // Title
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(18);
     doc.text('BasketStats - Player Statistics Report', 80, 38);
     doc.setFontSize(12);
     doc.text(`Competition: ${competitionName}`, 80, 58);
 
-    // Table
+    // Prepare table data
     const head = [[
-      'Player', 'GP', 'PPG', 'RPG', 'APG', 'FG%', '3P%', 'FT%', 'SPG', 'BPG', 'TOV', 'MPG', 'EFF', 'Total PTS', 'Total REB', 'Total AST', 'Total STL', 'Total BLK'
+      'Player','GP','PPG','RPG','APG','FG%','3P%','FT%','SPG','BPG','TOV','MPG','EFF','Total PTS','Total REB','Total AST','Total STL','Total BLK'
     ]];
     const body = players.map(p => [
       p.playerName,
@@ -60,6 +58,32 @@ export class PdfService {
       alternateRowStyles: { fillColor: [245, 245, 245] }
     });
 
+    // Add logo bottom-right (load image and then save)
+    try {
+      const imgData = await this.loadImageAsDataUrl('/images/basketballstats.png');
+      const imgW = 80, imgH = 80;
+      doc.addImage(imgData, 'PNG', width - imgW - 24, height - imgH - 24, imgW, imgH);
+    } catch {
+      // ignore if image load fails
+    }
+
     doc.save(`PlayerStats_${competitionName.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+  }
+
+  private loadImageAsDataUrl(src: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width; canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject('no ctx'); return; }
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = reject;
+      img.src = src;
+    });
   }
 }
