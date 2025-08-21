@@ -31,8 +31,9 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 
     <div *ngIf="!dataSource" class="loading">Loading player statistics...</div>
     <div *ngIf="dataSource">
-      <div style="display:flex; justify-content:flex-end; margin-bottom:8px">
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-bottom:8px">
         <button mat-raised-button color="primary" (click)="exportPdf()">Export to PDF</button>
+        <button mat-raised-button color="accent" (click)="exportPdfAdvanced()">Advanced Stats export to PDF</button>
       </div>
       <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z4 full-width">
         <ng-container matColumnDef="playerName"><th mat-header-cell *matHeaderCellDef mat-sort-header>Player</th><td mat-cell *matCellDef="let p"><strong style="color: var(--nba-accent-orange)">{{p.playerName}}</strong></td></ng-container>
@@ -73,4 +74,5 @@ export class PlayerStatsOverviewComponent implements OnInit {
   onCompetitionChanged(v: string|null) { this.selectedCompetitionId = v || null; this.load(); }
   load() { this.dataSource = null; this.api.getAllPlayersStats(this.selectedCompetitionId ?? undefined).subscribe(ps => { this.dataSource = new MatTableDataSource(ps); queueMicrotask(()=>{ if(this.dataSource){ this.dataSource.paginator = this.paginator; this.dataSource.sort = this.sort; } }); }); }
   exportPdf() { const players = this.dataSource?.data ?? []; if (!players.length) return; const compName = this.selectedCompetitionId ? (this.competitions.find(c => c.id === this.selectedCompetitionId)?.name ?? '') : 'All Competitions'; this.pdf.generatePlayerStatsReport(players, compName); }
+  exportPdfAdvanced() { const players = this.dataSource?.data ?? []; if (!players.length) return; const compName = this.selectedCompetitionId ? (this.competitions.find(c => c.id === this.selectedCompetitionId)?.name ?? '') : 'All Competitions'; this.pdf.generatePlayerStatsReportAdvanced(players, compName); }
 }

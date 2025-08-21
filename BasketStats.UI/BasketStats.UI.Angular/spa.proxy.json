@@ -1,7 +1,11 @@
 {
-  "$schema": "https://json.schemastore.org/saproj.json",
+  "$schema": "https://json.schemastore.org/spa.proxy.manifest",
   "server": {
     "url": "http://localhost:4200",
     "timeout": 120000
+  },
+  "launch": {
+    "command": "npm start",
+    "workingDirectory": "ClientApp"
   }
 }
