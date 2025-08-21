@@ -5,27 +5,24 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <SpaRoot>ClientApp/</SpaRoot>
     <RootNamespace>BasketStats.UI.Angular</RootNamespace>
-    <!-- Prevent MSBuild TypeScript build -->
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules/**/*</DefaultItemExcludes>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="9.0.6" />
+    <!-- SpaProxy enables Visual Studio to read spa.proxy.json and launch the dev server automatically -->
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="9.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
+
   <ItemGroup>
-    <!-- Do not let MSBuild try to compile any TS from ClientApp -->
-    <TypeScriptCompile Remove="$(SpaRoot)**/*.ts" />
-    <TypeScriptCompile Remove="$(SpaRoot)**/*.tsx" />
-    <TypeScriptCompile Remove="$(SpaRoot)**/*.mts" />
-    <TypeScriptCompile Remove="$(SpaRoot)**/*.cts" />
+    <None Include="spa.proxy.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-  <!-- Treat everything under ClientApp as static content so it gets published, but don't compile it -->
-  <ItemGroup>
-    <None Include="$(SpaRoot)**/*" Exclude="$(SpaRoot)node_modules/**/*" />
-  </ItemGroup>
-  <!-- Optional: Restore npm packages on build if available (no Debug restriction) -->
-  <Target Name="EnsureNodeEnv" BeforeTargets="Build" Condition="Exists('$(SpaRoot)package.json') And !Exists('$(SpaRoot)node_modules')">
-    <Message Importance="high" Text="Restoring npm packages in ClientApp..." />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" ContinueOnError="true" />
+
+  <!-- Restore npm packages automatically on first debug build -->
+  <Target Name="NpmInstallIfMissing" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('ClientApp/node_modules') ">
+    <Message Text="Restoring npm packages (npm ci) for Angular ClientApp..." Importance="high" />
+    <Exec WorkingDirectory="ClientApp" Command="npm ci" />
   </Target>
 </Project>

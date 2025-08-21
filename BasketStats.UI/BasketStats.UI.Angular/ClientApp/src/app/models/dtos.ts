@@ -7,22 +7,40 @@ export interface PlayerSeasonStatsDto {
   playerId: string;
   playerName: string;
   gamesPlayed: number;
+
+  // Per-game
   pointsPerGame: number;
   reboundsPerGame: number;
+  defensiveReboundsPerGame: number;
+  offensiveReboundsPerGame: number;
   assistsPerGame: number;
-  fieldGoalPercentage: number;
-  threePointPercentage: number;
-  freeThrowPercentage: number;
   stealsPerGame: number;
   blocksPerGame: number;
   turnoversPerGame: number;
   minutesPerGame: number;
   efficiency: number;
+
+  // Percentages
+  fieldGoalPercentage: number;
+  threePointPercentage: number;
+  freeThrowPercentage: number;
+  twoPointPercentage: number;
+
+  // Totals
   totalPoints: number;
   totalRebounds: number;
   totalAssists: number;
   totalSteals: number;
   totalBlocks: number;
+
+  totalFieldGoalsMade: number;
+  totalFieldGoalsAttempted: number;
+  totalThreePointersMade: number;
+  totalThreePointersAttempted: number;
+  totalTwoPointersMade: number;
+  totalTwoPointersAttempted: number;
+  totalFreeThrowsMade: number;
+  totalFreeThrowsAttempted: number;
 }
 
 export interface TeamSeasonStatsDto {
