@@ -6,11 +6,12 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   standalone: true,
   selector: 'app-matches',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatPaginatorModule, MatSortModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatPaginatorModule, MatSortModule, MatSnackBarModule],
   template: `
   <h1>All Matches</h1>
   <div *ngIf="!dataSource" class="loading">Loading matches...</div>
@@ -39,8 +40,14 @@ export class MatchesComponent implements OnInit {
   displayedColumns = ['matchDate','playerStatCount','actions'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private snackBar: MatSnackBar) {}
   ngOnInit() { this.load(); }
   load() { this.api.getMatches().subscribe(x => { this.dataSource = new MatTableDataSource(x); queueMicrotask(()=>{ if(this.dataSource){ this.dataSource.paginator = this.paginator; this.dataSource.sort = this.sort; } }); }); }
-  delete(id: string) { if (!confirm('Are you sure you want to delete this match?')) return; this.api.deleteMatch(id).subscribe(() => this.load()); }
+  delete(id: string) {
+    if (!confirm('Are you sure you want to delete this match? This will remove all associated player stats.')) return;
+    this.api.deleteMatch(id).subscribe({
+      next: () => { this.snackBar.open('Match deleted', 'OK', { duration: 3000 }); this.load(); },
+      error: () => { this.snackBar.open('Failed to delete match', 'Dismiss', { duration: 4000 }); }
+    });
+  }
 }

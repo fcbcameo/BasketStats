@@ -1,9 +1,11 @@
 // src/BasketStats.Web/Program.cs
 using BasketStats.Application.Common.Behaviors;
 using BasketStats.Application.Competitions.Commands.CreateCompetition;
+using BasketStats.Application.Competitions.Commands.DeleteCompetition;
 using BasketStats.Application.Competitions.Queries.GetAllCompetitions;
 using BasketStats.Application.DTOs;
 using BasketStats.Application.Matches.Commands.UploadMatchStats;
+using BasketStats.Application.Matches.Commands.DeleteMatch;
 using BasketStats.Application.Players.Queries.GetPlayerSeasonStats;
 using BasketStats.Application.Players.Queries.GetAllPlayersStats;
 using BasketStats.Application.Services;
@@ -13,7 +15,6 @@ using BasketStats.Infrastructure.Persistence;
 using BasketStats.Infrastructure.Persistence.Repositories;
 using BasketStats.Infrastructure.Services;
 using BasketStats.Web.Middleware;
-using BasketStats.Application.Matches.Commands.DeleteMatch;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -226,6 +227,14 @@ app.MapDelete("/api/matches/{matchId:guid}", async (Guid matchId, IMediator medi
 .WithName("DeleteMatch")
 .Produces(204)
 .Produces(404);
+
+app.MapDelete("/api/competitions/{competitionId:guid}", async (Guid competitionId, IMediator mediator) =>
+{
+    await mediator.Send(new DeleteCompetitionCommand(competitionId));
+    return Results.NoContent();
+})
+.WithName("DeleteCompetition")
+.Produces(204);
 
 app.MapGet("/api/matches", async (IMatchRepository repo) =>
 {

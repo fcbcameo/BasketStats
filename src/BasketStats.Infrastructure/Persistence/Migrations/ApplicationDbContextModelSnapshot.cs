@@ -51,6 +51,8 @@ namespace BasketStats.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompetitionId");
+
                     b.ToTable("Matches");
                 });
 
@@ -71,6 +73,12 @@ namespace BasketStats.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("BasketStats.Domain.Match", b =>
                 {
+                    b.HasOne("BasketStats.Domain.Competition", null)
+                        .WithMany()
+                        .HasForeignKey("CompetitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsMany("BasketStats.Domain.ValueObjects.PlayerStats", "PlayerStats", b1 =>
                         {
                             b1.Property<int>("Id")
@@ -143,7 +151,7 @@ namespace BasketStats.Infrastructure.Persistence.Migrations
 
                             b1.HasIndex("MatchId");
 
-                            b1.ToTable("PlayerStats");
+                            b1.ToTable("PlayerStats", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("MatchId");
