@@ -39,6 +39,10 @@ export class ApiService {
     return this.http.post(this.baseUrl + 'api/competitions', payload);
   }
 
+  deleteCompetition(id: string) {
+    return this.http.delete(`${this.baseUrl}api/competitions/${id}`);
+  }
+
   uploadMatchStats(competitionId: string, file: File) {
     const form = new FormData();
     form.append('file', file, file.name);

@@ -6,22 +6,27 @@ namespace BasketStats.Infrastructure.Persistence.Repositories;
 
 public class InMemoryCompetitionRepository : ICompetitionRepository
 {
-    private static readonly List<Competition> _competitions = new();
+    private readonly List<Competition> _comps = new();
 
     public Task AddAsync(Competition competition)
     {
-        _competitions.Add(competition);
+        _comps.Add(competition);
         return Task.CompletedTask;
     }
 
     public Task<IEnumerable<Competition>> GetAllAsync()
     {
-        return Task.FromResult(_competitions.AsEnumerable());
+        return Task.FromResult<IEnumerable<Competition>>(_comps.ToList());
     }
 
     public Task<Competition?> GetByIdAsync(Guid id)
     {
-        var competition = _competitions.SingleOrDefault(c => c.Id == id);
-        return Task.FromResult(competition);
+        return Task.FromResult(_comps.FirstOrDefault(c => c.Id == id));
+    }
+
+    public Task DeleteAsync(Competition competition)
+    {
+        _comps.RemoveAll(c => c.Id == competition.Id);
+        return Task.CompletedTask;
     }
 }

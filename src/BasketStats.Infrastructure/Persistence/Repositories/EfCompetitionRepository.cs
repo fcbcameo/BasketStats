@@ -29,4 +29,10 @@ public class EfCompetitionRepository : ICompetitionRepository
     {
         return await _context.Competitions.FindAsync(id);
     }
+
+    public async Task DeleteAsync(Competition competition)
+    {
+        _context.Competitions.Remove(competition);
+        await _context.SaveChangesAsync();
+    }
 }
