@@ -9,14 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
-// Add antiforgery but configure it to be permissive
-builder.Services.AddAntiforgery(options =>
-{
-    options.SuppressXFrameOptionsHeader = true;
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
-});
-
 // Add Radzen services
 builder.Services.AddRadzenComponents();
 
@@ -63,8 +55,6 @@ else
 }
 
 app.UseHttpsRedirection();
-
-app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

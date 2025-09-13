@@ -8,11 +8,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterModule } from '@angular/router'; // <-- Add this import
 
 @Component({
   standalone: true,
   selector: 'app-competitions',
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, MatSnackBarModule],
+  imports: [
+    CommonModule, FormsModule, MatFormFieldModule, MatInputModule,
+    MatButtonModule, MatCardModule, MatSnackBarModule, RouterModule // <-- Add RouterModule
+  ],
   template: `
   <h1>Competitions</h1>
   <mat-card class="stats-card">
@@ -32,7 +36,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     <ul>
       <li *ngFor="let c of competitions" style="display:flex; align-items:center; justify-content:space-between; gap:8px">
         <span>{{c.name}}</span>
-        <button mat-stroked-button color="warn" (click)="confirmDelete(c.id, c.name)">Delete</button>
+        <div style="display:flex; gap:8px">
+          <a mat-stroked-button color="primary" [routerLink]="['/competitions', c.id, 'upload']">Upload Stats</a>
+          <button mat-stroked-button color="warn" (click)="confirmDelete(c.id, c.name)">Delete</button>
+        </div>
       </li>
     </ul>
   </mat-card>
